@@ -2,7 +2,15 @@ require './lib/frame'
 
 describe Frame do
 
-  let(:frame) { described_class.new }
+  let(:frame) { described_class.new(:frame_num) }
+
+  describe '#initialize' do
+
+    it 'includes the frame number in the frame score for reference' do
+      another_frame = Frame.new(5)
+      expect(another_frame.log[:frame_num]).to eq 5
+    end
+  end
 
   describe '#roll' do
 
@@ -47,7 +55,7 @@ describe Frame do
     it "adds to the relevant key a roll result to the frame's score" do
       frame.update_score(:first_roll, 5)
       frame.update_score(:second_roll, 3)
-      expect(frame.frame_score).to eq( { first_roll: 5, second_roll: 3 })
+      expect(frame.log).to eq( { frame_num: :frame_num, first_roll: 5, second_roll: 3 })
     end
   end
 

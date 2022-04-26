@@ -1,10 +1,10 @@
 class Frame
 
-  attr_reader :pins_standing, :frame_score
+  attr_reader :pins_standing, :log
 
-  def initialize
+  def initialize(frame_num)
     @pins_standing = 10
-    @frame_score  = { first_roll: nil, second_roll: nil}
+    @log  = { frame_num: frame_num, first_roll: nil, second_roll: nil}
   end
 
 
@@ -17,11 +17,11 @@ class Frame
   end
 
   def update_score(key, result)
-    @frame_score[key] = result
+    @log[key] = result
   end
 
   def strike?
-    @frame_score[:first_roll] == 10
+    @log[:first_roll] == 10
   end
 
 end

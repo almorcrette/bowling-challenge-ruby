@@ -22,17 +22,17 @@ class Game
       second_roll = frame.roll
       frame.update_score(:second_roll, second_roll)
     end
-    p frame.frame_score
+    p frame.log
   end
 
   def play_roll(frame = Frame.new, roll_num)
     roll = frame.roll
     frame.update_score(roll_num, roll)
-    frame.frame_score
+    frame.log
   end
 
-  def update_gamesheet(frame_score)
-    @scoresheet << frame_score
+  def update_gamesheet(frame_log)
+    @scoresheet << frame_log
     @scoresheet
   end
 
