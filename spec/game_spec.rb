@@ -66,4 +66,29 @@ describe Game do
     end
   end
 
+  describe '#update_gamesheet' do
+    it 'adds a first roll result to the gamesheet in a new frame' do
+      allow(frame).to receive(:roll).and_return(6)
+      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ first_roll: 6, second_roll: nil })
+      allow(frame).to receive(:frame_score).and_return( { first_roll: 6, second_roll: nil } )
+      frame_score = game.play_roll(frame, :first_roll)
+      game.update_gamesheet(frame_score)
+      expect(game.scoresheet).to eq [{ first_roll: 6, second_roll: nil }]
+    end
+
+    it 'adds a second roll result to the gamesheet in the current frame' do
+      allow(frame).to receive(:roll).and_return(6)
+      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ first_roll: 6, second_roll: nil })
+      allow(frame).to receive(:frame_score).and_return( { first_roll: 6, second_roll: nil } )
+      frame_score = game.play_roll(frame, :first_roll)
+      game.update_gamesheet(frame_score)
+      allow(frame).to receive(:roll).and_return(3)
+      allow(frame).to receive(:update_score).with(:second_roll, 3).and_return({ first_roll: 6, second_roll: 3 })
+      allow(frame).to receive(:frame_score).and_return( { first_roll: 6, second_roll: 3 } )
+      frame_score = game.play_roll(frame, :second_roll)
+      game.update_gamesheet(frame_score)
+      expect(game.scoresheet).to eq [{ first_roll: 6, second_roll: 3 }]
+    end
+  end
+
 end

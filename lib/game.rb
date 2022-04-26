@@ -31,6 +31,11 @@ class Game
     frame.frame_score
   end
 
+  def update_gamesheet(frame_score)
+    @scoresheet << frame_score
+    @scoresheet
+  end
+
 
 
 end
