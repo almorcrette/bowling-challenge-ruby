@@ -43,42 +43,6 @@ describe Frame do
 
   end
 
-  describe '#cleared?' do 
-
-    describe 'when there are no pins standing' do
-      before do
-        $stdin = StringIO.new("10")
-      end
-  
-      after do
-        $stdin = STDIN
-      end
-      
-      it 'returns true ' do
-        frame.roll
-        expect(frame.cleared?).to be true
-      end
-    end
-
-    describe 'when there are still pins standing' do
-
-      before do
-        $stdin = StringIO.new("5")
-      end
-  
-      after do
-        $stdin = STDIN
-      end
-
-      it 'returns false' do
-        frame.roll
-        expect(frame.cleared?).to be false
-      end
-
-    end
-
-  end
-
   describe '#update_score' do 
     it "adds to the relevant key a roll result to the frame's score" do
       frame.update_score(:first_roll, 5)

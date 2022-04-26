@@ -25,6 +25,12 @@ class Game
     p frame.frame_score
   end
 
+  def play_roll(frame = Frame.new, roll_num)
+    roll = frame.roll
+    frame.update_score(roll_num, roll)
+    frame.frame_score
+  end
+
 
 
 end
