@@ -1,10 +1,23 @@
 class Frame
 
+  def self.new_play(frame_num)
+    frame = Frame.new(frame_num)
+    first_roll = frame.roll
+    frame.update_score(:first_roll, first_roll)
+    frame
+  end
+
   attr_reader :pins_standing, :log
 
   def initialize(frame_num)
     @pins_standing = 10
     @log  = { frame_num: frame_num, first_roll: nil, second_roll: nil}
+  end
+
+  def second_play
+    second_roll = self.roll
+    self.update_score(:second_roll, second_roll)
+    self
   end
 
 
