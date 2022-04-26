@@ -31,8 +31,14 @@ class Game
     frame.log
   end
 
-  def update_gamesheet(frame_log)
-    @scoresheet << frame_log
+  def update_gamesheet(played_frame_log)
+    @scoresheet.each do |frame_log|
+      if played_frame_log[:frame_num] == frame_log[:frame_num]
+        frame_log[:second_roll] = played_frame_log[:second_roll]
+        return @scoresheet
+      end
+    end
+    @scoresheet << played_frame_log
     @scoresheet
   end
 
