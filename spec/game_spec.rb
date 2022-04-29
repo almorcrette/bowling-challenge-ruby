@@ -112,7 +112,7 @@ describe Game do
 
     describe 'when the first roll is not a strike' do
       it "records first and second rolls and add them to the frame's basic score" do
-        allow(frame_class).to receive(:new_play).and_return frame_roll_not_strike
+        allow(frame).to receive(:first_play).and_return frame_roll_not_strike
         allow(frame_roll_not_strike).to receive(:second_play).and_return frame_roll_not_spare
         expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 5, second_roll: 3, bonus: nil, score: 8 }]
       end
@@ -121,13 +121,13 @@ describe Game do
     # problem with this test. It doesn't actually test that the frame is closed after a single roll.
     describe 'when the first roll is a strike' do
       it 'ends the frame after one roll' do
-        allow(frame_class).to receive(:new_play).and_return frame_roll_strike
+        allow(frame).to receive(:first_play).and_return frame_roll_strike
         expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 10, second_roll: nil, bonus: :strike }]
       end
     end
 
     it "prints the frame's basic score at the end of the frame" do
-      allow(frame_class).to receive(:new_play).and_return frame_roll_not_strike
+      allow(frame).to receive(:first_play).and_return frame_roll_not_strike
       allow(frame_roll_not_strike).to receive(:second_play).and_return frame_roll_not_spare
       expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 5, second_roll: 3, bonus: nil, score: 8 }]
     end
@@ -145,7 +145,7 @@ describe Game do
 
   describe '#play' do
     it 'plays through a full ten frames and returns a game scoresheet' do
-      allow(frame_class).to receive(:new_play).and_return frame_roll_not_strike
+      allow(frame).to receive(:first_play).and_return frame_roll_not_strike
       allow(frame_roll_not_strike).to receive(:second_play).and_return frame_roll_not_spare
       gamesheet = []
       (1..10).each do |i|

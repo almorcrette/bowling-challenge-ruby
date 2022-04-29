@@ -14,6 +14,12 @@ class Frame
     @log  = { frame_num: frame_num, first_roll: nil, second_roll: nil, bonus: nil, score: nil}
   end
 
+  def first_play
+    first_roll = self.roll
+    self.update_score(:first_roll, first_roll)
+    self
+  end
+
   def second_play
     second_roll = self.roll
     self.update_score(:second_roll, second_roll)
