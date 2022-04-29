@@ -52,6 +52,9 @@ class Game
     if @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :spare
       @scoresheet[-2][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:second_roll]
     end
+    if @scoresheet.length > 2 && @scoresheet[-3][:bonus] == :strike && @scoresheet[-2][:bonus]
+      @scoresheet[-3][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:first_roll]
+    end
     @scoresheet
   end
 
