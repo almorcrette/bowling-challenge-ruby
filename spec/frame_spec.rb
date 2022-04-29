@@ -51,52 +51,34 @@ describe Frame do
 
   end
 
-  describe '#update_score' do 
+  describe '#update_log' do 
     it "adds to the :first_roll key the first roll" do
-      frame.update_score(:first_roll, 5)
+      frame.update_log(:first_roll, 5)
       expect(frame.log[:first_roll]).to eq 5
     end
 
     it "adds to the :second_roll key the second roll" do
-      frame.update_score(:first_roll, 5)
-      frame.update_score(:second_roll, 3)
+      frame.update_log(:first_roll, 5)
+      frame.update_log(:second_roll, 3)
       expect(frame.log[:second_roll]).to eq 3
     end
 
     it "updates the score if two rolls are less than 10" do
-      frame.update_score(:first_roll, 5)
-      frame.update_score(:second_roll, 3)
+      frame.update_log(:first_roll, 5)
+      frame.update_log(:second_roll, 3)
       expect(frame.log[:score]).to be 8
     end
 
     it "updates the log's 'bonus' key with 'strike' if the first roll is 10" do
-      frame.update_score(:first_roll, 10)
+      frame.update_log(:first_roll, 10)
       expect(frame.log[:bonus]).to be :strike
     end
 
     it "updates the log's 'bonus' key with 'spare' if two rolls add up to 10" do
-      frame.update_score(:first_roll, 5)
-      frame.update_score(:second_roll, 5)
+      frame.update_log(:first_roll, 5)
+      frame.update_log(:second_roll, 5)
       expect(frame.log[:bonus]).to be :spare
     end
   end
 
-  describe '#strike?' do
-
-    describe 'when first roll does not knock ten pins down' do
-      it 'returns false' do
-        frame.update_score(:first_roll, 5)
-        frame.update_score(:second_roll, 3)
-        expect(frame.strike?).to be false
-      end
-    end
-
-    describe 'when first roll knocks ten pins down' do
-      it 'returns true' do
-        frame.update_score(:first_roll, 10)
-        expect(frame.strike?).to be true
-      end
-    end
-
-  end
 end

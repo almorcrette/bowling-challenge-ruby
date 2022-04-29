@@ -21,7 +21,7 @@ class Game
     frame = frame_class.new(frame_num)
     frame = frame.first_play
     update_gamesheet(frame)
-    unless frame.strike?
+    unless frame.log[:bonus] == :strike
       frame = frame.second_play
       update_gamesheet(frame)
     end
