@@ -134,15 +134,6 @@ describe Game do
 
   end
 
-  describe '#play_roll' do 
-    it "records the roll and add it to the frame's basic score" do
-      allow(frame).to receive(:roll).and_return(6)
-      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ first_roll: 6, second_roll: nil })
-      allow(frame).to receive(:log).and_return( { first_roll: 6, second_roll: nil } )
-      expect(game.play_roll(frame, :first_roll).log).to eq( { first_roll: 6, second_roll: nil } )
-    end
-  end
-
   describe '#play' do
     it 'plays through a full ten frames and returns a game scoresheet' do
       allow(frame).to receive(:first_play).and_return frame_roll_not_strike

@@ -25,47 +25,73 @@ class Game
       frame = frame.second_play
       update_gamesheet(frame)
     end
-    p @scoresheet
-  end
-
-  def play_roll(frame, roll_num)
-    roll = frame.roll
-    frame.update_score(roll_num, roll)
-    frame
-  end
-
-  def update_gamesheet(played_frame)
-    p "Scoresheet length #{@scoresheet.length}"
-    if @scoresheet.length >= 1
-      p "Scoresheet #{@scoresheet}"
-    end
-    p "Played frame log frame num: #{played_frame.log}"
-    if @scoresheet.length >= 1 && @scoresheet[-1][:frame_num] == played_frame.log[:frame_num]
-      @scoresheet[-1][:second_roll] = played_frame.log[:second_roll]
-      if played_frame.log[:bonus] == nil
-        @scoresheet[-1][:score] = played_frame.log[:score]
-      else
-        @scoresheet[-1][:bonus] = played_frame.log[:bonus]
-      end
-      if @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :strike
-        @scoresheet[-2][:score] = played_frame.log[:first_roll] + played_frame.log[:second_roll] + @scoresheet[-2][:first_roll]
-      end
-      puts @scoresheet
-    else
-      p "entering this else statement..."
-      @scoresheet << played_frame.log
-      if @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :spare
-        @scoresheet[-2][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:second_roll]
-      end
-      if @scoresheet.length > 2 && @scoresheet[-3][:bonus] == :strike && @scoresheet[-2][:bonus]
-        @scoresheet[-3][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:first_roll]
-      end
-      puts @scoresheet
-    end
-    p "scoresheet length #{@scoresheet.length}"
+    puts @scoresheet[-1]
     @scoresheet
   end
 
+  def update_gamesheet(played_frame)
+    if frame_open?(played_frame)
+      post_second_roll(played_frame)
+      basic_score(played_frame)
+      if strike_previous?
+        score_previous_strike(played_frame)
+      end
+    else
+      post_first_roll(played_frame)
+      if spare_previous?
+        score_previous_spare(played_frame)
+      end
+      if strike_previous_two?
+        score_lastbutone_strike(played_frame)
+      end
+    end
+    @scoresheet
+  end
 
+  private
+
+  def post_first_roll(played_frame)
+    @scoresheet << played_frame.log
+  end
+
+  def frame_open?(played_frame)
+    @scoresheet.length >= 1 && @scoresheet[-1][:frame_num] == played_frame.log[:frame_num]
+  end
+
+  def post_second_roll(played_frame)
+    @scoresheet[-1][:second_roll] = played_frame.log[:second_roll]
+  end
+
+  def basic_score(played_frame)
+    if played_frame.log[:bonus] == nil
+      @scoresheet[-1][:score] = played_frame.log[:score]
+    else
+      @scoresheet[-1][:bonus] = played_frame.log[:bonus]
+    end
+  end
+
+  def spare_previous?
+    @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :spare
+  end
+
+  def score_previous_spare(played_frame)
+    @scoresheet[-2][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:second_roll]
+  end
+
+  def strike_previous?
+    @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :strike
+  end
+
+  def score_previous_strike(played_frame)
+    @scoresheet[-2][:score] = played_frame.log[:first_roll] + played_frame.log[:second_roll] + @scoresheet[-2][:first_roll]
+  end
+
+  def strike_previous_two?
+    @scoresheet.length > 2 && @scoresheet[-3][:bonus] == :strike && @scoresheet[-2][:bonus] == :strike
+  end
+
+  def score_lastbutone_strike(played_frame)
+    @scoresheet[-3][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:first_roll]
+  end
 
 end
