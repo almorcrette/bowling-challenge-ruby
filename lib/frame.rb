@@ -11,7 +11,7 @@ class Frame
 
   def initialize(frame_num)
     @pins_standing = 10
-    @log  = { frame_num: frame_num, first_roll: nil, second_roll: nil}
+    @log  = { frame_num: frame_num, first_roll: nil, second_roll: nil, bonus: nil, score: nil}
   end
 
   def second_play
@@ -31,6 +31,15 @@ class Frame
 
   def update_score(key, result)
     @log[key] = result
+    if key == :first_roll && result == 10
+      @log[:bonus] = :strike
+    elsif key == :second_roll
+      if result + @log[:first_roll] == 10
+        @log[:bonus] = :spare
+      else
+        @log[:score] = @log[:first_roll] + @log[:second_roll]
+      end
+    end
   end
 
   def strike?

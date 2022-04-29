@@ -9,9 +9,10 @@ describe Game do
   let(:frame_roll_strike) {
     double :frame_roll_strike,
     log: {
-      frame_num: :frame_num,
+      frame_num: 1,
       first_roll: 10,
-      second_roll: nil
+      second_roll: nil,
+      bonus: :strike
     },
     strike?: true
   }
@@ -19,9 +20,10 @@ describe Game do
   let(:frame_roll_not_strike) {
     double :frame_roll_not_strike,
     log: {
-      frame_num: :frame_num,
+      frame_num: 1,
       first_roll: 5,
-      second_roll: nil
+      second_roll: nil,
+      bonus: nil
     },
     strike?: false
   }
@@ -29,18 +31,31 @@ describe Game do
   let(:frame_roll_spare) {
     double :frame_roll_spare,
     log: {
-      frame_num: :frame_num,
+      frame_num: 1,
       first_roll: 5,
-      second_roll: 5
+      second_roll: 5,
+      bonus: :spare
     }
   }
 
   let(:frame_roll_not_spare) {
     double :frame_roll_not_spare,
     log: {
-      frame_num: :frame_num,
+      frame_num: 1,
       first_roll: 5,
-      second_roll: 3
+      second_roll: 3,
+      bonus: nil,
+      score: 8
+    }
+  }
+
+  let(:subsequent_frame_not_strike) {
+    double :subsequent_frame_not_strike,
+    log: {
+      frame_num: 2,
+      first_roll: 5,
+      second_roll: nil,
+      bonus: nil
     }
   }
 
@@ -54,7 +69,7 @@ describe Game do
       it "records first and second rolls and add them to the frame's basic score" do
         allow(frame_class).to receive(:new_play).and_return frame_roll_not_strike
         allow(frame_roll_not_strike).to receive(:second_play).and_return frame_roll_not_spare
-        expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: :frame_num, first_roll: 5, second_roll: 3 }]
+        expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 5, second_roll: 3, bonus: nil, score: 8 }]
       end
     end
 
@@ -62,14 +77,14 @@ describe Game do
     describe 'when the first roll is a strike' do
       it 'ends the frame after one roll' do
         allow(frame_class).to receive(:new_play).and_return frame_roll_strike
-        expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: :frame_num, first_roll: 10, second_roll: nil }]
+        expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 10, second_roll: nil, bonus: :strike }]
       end
     end
 
     it "prints the frame's basic score at the end of the frame" do
       allow(frame_class).to receive(:new_play).and_return frame_roll_not_strike
       allow(frame_roll_not_strike).to receive(:second_play).and_return frame_roll_not_spare
-      expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: :frame_num, first_roll: 5, second_roll: 3 }]
+      expect(game.play_frame(:frame_num, frame_class)).to eq [{ frame_num: 1, first_roll: 5, second_roll: 3, bonus: nil, score: 8 }]
     end
 
   end
@@ -98,7 +113,7 @@ describe Game do
   describe '#update_gamesheet' do
     it 'adds a first roll result to the gamesheet in a new frame' do
       game.update_gamesheet(frame_roll_not_strike)
-      expect(game.scoresheet).to eq [{ frame_num: :frame_num, first_roll: 5, second_roll: nil }]
+      expect(game.scoresheet).to eq [{ frame_num: 1, first_roll: 5, second_roll: nil, bonus: nil }]
       
       
 
@@ -112,39 +127,38 @@ describe Game do
     end
 
     it 'adds a second roll result to the gamesheet in the current frame' do
-      allow(frame).to receive(:roll).and_return(6)
-      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: nil })
-      allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: nil } )
-      played_frame = game.play_roll(frame, :first_roll)
-      game.update_gamesheet(played_frame)
-      allow(frame).to receive(:roll).and_return(3)
-      allow(frame).to receive(:update_score).with(:second_roll, 3).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: 3 })
-      allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: 3 } )
-      frame_log = game.play_roll(frame, :second_roll)
-      game.update_gamesheet(frame_log)
-      expect(game.scoresheet).to eq [{ frame_num: :frame_num, first_roll: 6, second_roll: 3 }]
+      game.update_gamesheet(frame_roll_not_strike)
+      game.update_gamesheet(frame_roll_not_spare)
+      expect(game.scoresheet).to eq [{ frame_num: 1, first_roll: 5, second_roll: 3, bonus: nil, score: 8 }]
     end
 
-    it 'updates total scores of previous frames based on bonus scoring' do
-      allow(frame).to receive(:roll).and_return(6)
-      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: nil })
-      allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: nil } )
-      played_frame = game.play_roll(frame, :first_roll)
-      game.update_gamesheet(played_frame)
-      allow(frame).to receive(:roll).and_return(3)
-      allow(frame).to receive(:update_score).with(:second_roll, 3).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: 3 })
-      allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: 3 } )
-      frame_log = game.play_roll(frame, :second_roll)
-      game.update_gamesheet(frame_log)
-      allow(frame).to receive(:roll).and_return(6)
-      allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: nil })
-      allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: nil } )
-      frame_log= game.play_roll(frame, :first_roll)
-      game.update_gamesheet(frame_log)
+    it 'updates total score of a previous spare frame based on first roll of next frame' do
+      game.update_gamesheet(frame_roll_not_strike)
+      game.update_gamesheet(frame_roll_spare)
+      game.update_gamesheet(subsequent_frame_not_strike)
       expect(game.scoresheet).to eq [
-        { frame_num: 1, first_roll: 6, second_roll: 4, score: 16 },
-        { frame_num: 2, first_roll: 6, second_roll: nil }
-      ]
+        { frame_num: 1, first_roll: 5, second_roll: 5, bonus: :spare, score: 15 },
+        { frame_num: 2, first_roll: 5, second_roll: nil, bonus: nil },
+       ]
+
+      # allow(frame).to receive(:roll).and_return(6)
+      # allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: nil })
+      # allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: nil } )
+      # played_frame = game.play_roll(frame, :first_roll)
+      # game.update_gamesheet(played_frame)
+      # allow(frame).to receive(:roll).and_return(3)
+      # allow(frame).to receive(:update_score).with(:second_roll, 3).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: 3 })
+      # allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: 3 } )
+      # frame_log = game.play_roll(frame, :second_roll)
+      # game.update_gamesheet(frame_log)
+      # allow(frame).to receive(:roll).and_return(6)
+      # allow(frame).to receive(:update_score).with(:first_roll, 6).and_return({ frame_num: :frame_num, first_roll: 6, second_roll: nil })
+      # allow(frame).to receive(:log).and_return( { frame_num: :frame_num, first_roll: 6, second_roll: nil } )
+      # frame_log= game.play_roll(frame, :first_roll)
+      # game.update_gamesheet(frame_log)
+      # expect(game.scoresheet).to eq [
+      #   { frame_num: 1, first_roll: 6, second_roll: 4, :score: 16 },
+      #   { frame_num: 2, first_roll: 6, second_roll: nil }
     end
   end
 

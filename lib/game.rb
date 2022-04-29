@@ -37,10 +37,18 @@ class Game
     @scoresheet.each do |frame_log|
       if played_frame.log[:frame_num] == frame_log[:frame_num]
         frame_log[:second_roll] = played_frame.log[:second_roll]
+        if played_frame.log[:bonus] == nil
+          frame_log[:score] = played_frame.log[:score]
+        else
+          frame_log[:bonus] = played_frame.log[:bonus]
+        end
         return @scoresheet
       end
     end
     @scoresheet << played_frame.log
+    if @scoresheet.length > 1 && @scoresheet[-2][:bonus] == :spare
+      @scoresheet[-2][:score] = played_frame.log[:first_roll] + @scoresheet[-2][:first_roll] + @scoresheet[-2][:second_roll]
+    end
     @scoresheet
   end
 

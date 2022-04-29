@@ -52,10 +52,32 @@ describe Frame do
   end
 
   describe '#update_score' do 
-    it "adds to the relevant key a roll result to the frame's score" do
+    it "adds to the :first_roll key the first roll" do
+      frame.update_score(:first_roll, 5)
+      expect(frame.log[:first_roll]).to eq 5
+    end
+
+    it "adds to the :second_roll key the second roll" do
       frame.update_score(:first_roll, 5)
       frame.update_score(:second_roll, 3)
-      expect(frame.log).to eq( { frame_num: :frame_num, first_roll: 5, second_roll: 3 })
+      expect(frame.log[:second_roll]).to eq 3
+    end
+
+    it "updates the score if two rolls are less than 10" do
+      frame.update_score(:first_roll, 5)
+      frame.update_score(:second_roll, 3)
+      expect(frame.log[:score]).to be 8
+    end
+
+    it "updates the log's 'bonus' key with 'strike' if the first roll is 10" do
+      frame.update_score(:first_roll, 10)
+      expect(frame.log[:bonus]).to be :strike
+    end
+
+    it "updates the log's 'bonus' key with 'spare' if two rolls add up to 10" do
+      frame.update_score(:first_roll, 5)
+      frame.update_score(:second_roll, 5)
+      expect(frame.log[:bonus]).to be :spare
     end
   end
 
