@@ -17,10 +17,7 @@ describe Frame do
     before do
       $stdin = StringIO.new("6")
     end
-    
-    after do
-      $stdin = STDIN
-    end
+
 
     it 'reduces the number of standing pins by pins knocked down' do
       frame.roll
@@ -35,10 +32,6 @@ describe Frame do
 
       before do
         $stdin = StringIO.new("5")
-      end
-  
-      after do
-        $stdin = STDIN
       end
 
       it 'raises an error' do
