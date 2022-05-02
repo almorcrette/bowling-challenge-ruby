@@ -118,7 +118,6 @@ describe Game do
       end
     end
 
-    # problem with this test. It doesn't actually test that the frame is closed after a single roll.
     describe 'when the first roll is a strike' do
       it 'ends the frame after one roll' do
         allow(frame).to receive(:first_play).and_return frame_roll_strike
@@ -142,7 +141,7 @@ describe Game do
       (1..10).each do |i|
         gamesheet << game.play_frame(i, frame_class)
       end
-      # expect(Game.play(frame_class)).to eq gamesheet
+      expect(Game.play(frame_class)).to eq gamesheet
     end
   end
 
